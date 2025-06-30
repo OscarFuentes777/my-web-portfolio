@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oscar Fuentes | Creative Developer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00ff88;
+            --secondary: #ff0088;
+            --dark: #0a0a0a;
+            --light: #fafafa;
+            --gray: #888;
+            --max-width: 1200px;
+            --header-height: 80px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        /* Canvas de fondo */
+        #space-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            cursor: crosshair;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: var(--header-height);
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        nav {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 2rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-size: 1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Controles del juego */
+        .game-controls {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            font-size: 0.9rem;
+        }
+
+        .game-controls h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .game-controls p {
+            margin: 0.2rem 0;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .sound-toggle {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: var(--dark);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Secciones principales */
+        .page-section {
+            display: none;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        #home {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+            z-index: 1;
+            background: rgba(10, 10, 10, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--gray) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleFadeIn 1s ease-out;
+        }
+
+        @keyframes titleFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--gray);
+            margin-bottom: 3rem;
+            animation: titleFadeIn 1s ease-out 0.2s both;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            animation: titleFadeIn 1s ease-out 0.4s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            animation: titleFadeIn 1s ease-out 0.6s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        /* Timeline */
+        .timeline {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateX(-30px);
+            animation: slideIn 0.6s ease-out forwards;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .timeline-item:nth-child(1) { animation-delay: 0.8s; }
+        .timeline-item:nth-child(2) { animation-delay: 1s; }
+        .timeline-item:nth-child(3) { animation-delay: 1.2s; }
+        .timeline-item:nth-child(4) { animation-delay: 1.4s; }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 2rem;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .timeline-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-date {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Projects Section */
+        #projects {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .projects-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .project-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 6rem;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .project-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .project-item:nth-child(even) {
+            direction: rtl;
+        }
+
+        .project-item:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .project-image {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            aspect-ratio: 16/10;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(255, 0, 136, 0.1));
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .project-image:hover {
+            transform: scale(1.02);
+        }
+
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .project-image:hover img {
+            transform: scale(1.1);
+        }
+
+        .project-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(255, 0, 136, 0.2));
+        }
+
+        .project-info h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .project-info p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: gap 0.3s ease;
+        }
+
+        .project-link:hover {
+            gap: 1rem;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 1200px;
+            max-height: 90vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            height: 70vh;
+            overflow: hidden;
+        }
+
+        .modal-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Admin Section */
+        #admin {
+            padding: 4rem 0;
+        }
+
+        .admin-login {
+            max-width: 400px;
+            margin: 4rem auto;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-dashboard {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: none;
+        }
+
+        .admin-dashboard.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gray);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+        }
+
+        .admin-projects {
+            margin-top: 4rem;
+        }
+
+        .admin-project-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-btn {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+            border: 1px solid #ff4444;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 0, 0, 0.3);
+        }
+
+        /* Game HUD */
+        .game-hud {
+            position: fixed;
+            top: 100px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .game-hud p {
+            margin: 0.5rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .project-item {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .project-item:nth-child(even) {
+                direction: ltr;
+            }
+
+            .timeline-item {
+                padding-left: 2rem;
+            }
+
+            .game-controls, .game-hud {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Space game canvas -->
+    <canvas id="space-canvas"></canvas>
+
+    <!-- Game Controls -->
+    <div class="game-controls">
+        <h4>🎮 Controls</h4>
+        <p>⬆️⬇️⬅️➡️ Move ship</p>
+        <p>Spacebar: Fire laser</p>
+        <p>Shift: Turbo boost</p>
+        <button class="sound-toggle" id="sound-toggle">🔊 Sound: ON</button>
+    </div>
+
+    <!-- Game HUD -->
+    <div class="game-hud">
+        <p>🛸 Ships: <span id="ship-count">0</span></p>
+        <p>☄️ Asteroids: <span id="asteroid-count">0</span></p>
+        <p>👽 Aliens: <span id="alien-count">0</span></p>
+        <p>🌍 Time: <span id="time-cycle">Day</span></p>
+    </div>
+
+    <!-- Header -->
+    <header id="main-header">
+        <nav>
+            <div class="logo">Secret</div>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Home Page -->
+    <section id="home" class="page-section active">
+        <div class="hero-content">
+            <h1 class="hero-title">Oscar Fuentes Fernandez</h1>
+            <p class="hero-subtitle">Creative Developer & Digital Architect</p>
+            <p class="hero-description">
+                I transform ideas into extraordinary digital experiences. 
+                My passion is exploring the limits of web technology to create 
+                solutions that not only work, but inspire.
+            </p>
+            <a href="#projects" class="cta-button nav-link">Explore Projects</a>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <h3>🚀 Journey Begins</h3>
+                <div class="timeline-date">2014 - Present</div>
+                <p>Started my journey in web development, mastering fundamental technologies and exploring modern frameworks.</p>
+            </div>
+            <div class="timeline-item">
+                <h3>💡 Constant Innovation</h3>
+                <div class="timeline-date">Featured Projects</div>
+                <p>Development of full-stack applications, from e-commerce to interactive dashboards with real-time data visualization.</p>
+            </div>
+            <div class="timeline-item">
+                <h3>🎯 Technical Leadership</h3>
+                <div class="timeline-date">Collaboration</div>
+                <p>Implementation of scalable architectures, agile methodologies and best practices in multidisciplinary teams.</p>
+            </div>
+            <div class="timeline-item">
+                <h3>🌌 Towards the Future</h3>
+                <div class="timeline-date">Next Steps</div>
+                <p>Exploring the frontiers of WebAssembly, generative AI and quantum computing for tomorrow's web.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Page -->
+    <section id="projects" class="page-section">
+        <h2 class="section-title">Featured Projects</h2>
+        <div class="projects-container" id="projects-container">
+            <!-- Projects will be loaded dynamically here -->
+        </div>
+    </section>
+
+    <!-- Admin Page (hidden) -->
+    <section id="admin" class="page-section">
+        <h2 class="section-title">Control Panel</h2>
+        
+        <div class="admin-login" id="admin-login">
+            <div class="form-group">
+                <label for="admin-password">Access Key</label>
+                <input type="password" id="admin-password" placeholder="Enter the key">
+            </div>
+            <button class="btn" id="login-btn">Access</button>
+        </div>
+
+        <div class="admin-dashboard" id="admin-dashboard">
+            <h3>Add New Project</h3>
+            <div class="form-group">
+                <label for="project-title">Project Title</label>
+                <input type="text" id="project-title" placeholder="Project name">
+            </div>
+            <div class="form-group">
+                <label for="project-description">Description</label>
+                <textarea id="project-description" rows="4" placeholder="Describe your project"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="project-image">Project Image</label>
+                <input type="file" id="project-image" accept="image/*" style="display: none;">
+                <div class="upload-area" id="image-upload-area">
+                    <p>📸 Drag an image or click to select</p>
+                    <p id="image-name"></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="project-file">Project File (.zip)</label>
+                <input type="file" id="project-file" accept=".zip" style="display: none;">
+                <div class="upload-area" id="file-upload-area">
+                    <p>📦 Drag a .zip file or click to select</p>
+                    <p id="file-name"></p>
+                </div>
+            </div>
+            <button class="btn" id="upload-btn">Upload Project</button>
+            <button class="btn btn-secondary" id="logout-btn" style="margin-left: 1rem;">Logout</button>
+
+            <div class="admin-projects">
+                <h3>Current Projects</h3>
+                <div id="admin-projects-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project modal -->
+    <div class="modal" id="project-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title"></h3>
+                <button class="modal-close" id="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="project-iframe"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        // Configuration
+        const ADMIN_PASSWORD = 'zettai_2024_admin';
+        const ADMIN_ROUTE = '#sudo';
+        
+        // Application state
+        let projects = [];
+        let selectedFile = null;
+        let selectedImage = null;
+        let currentSection = 'home';
+        let soundEnabled = true;
+
+        // Audio system
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function unlockAudio() {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }
+        document.body.addEventListener('click', unlockAudio, { once: true });
+
+        const sounds = {
+            laser: () => {
+                if (!soundEnabled || audioContext.state !== 'running') return;
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.1);
+            },
+            explosion: () => {
+                if (!soundEnabled || audioContext.state !== 'running') return;
+                const bufferSize = audioContext.sampleRate * 0.2;
+                const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() - 0.5) * 2 * Math.exp(-i / bufferSize * 5);
+                }
+                const source = audioContext.createBufferSource();
+                const gain = audioContext.createGain();
+                source.buffer = buffer;
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                source.connect(gain);
+                gain.connect(audioContext.destination);
+                source.start();
+            },
+            ambientSpace: null,
+            startAmbient: () => {
+                if (!soundEnabled || audioContext.state !== 'running' || sounds.ambientSpace) return;
+                
+                // Create white noise node
+                const bufferSize = audioContext.sampleRate * 2;
+                const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+                
+                const whiteNoise = audioContext.createBufferSource();
+                whiteNoise.buffer = noiseBuffer;
+                whiteNoise.loop = true;
+                
+                // Filter to create space sound
+                const filter = audioContext.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 400;
+                
+                // Low frequency oscillator for humming
+                const lfo = audioContext.createOscillator();
+                lfo.frequency.value = 0.5;
+                const lfoGain = audioContext.createGain();
+                lfoGain.gain.value = 50;
+                
+                // Connect LFO to filter
+                lfo.connect(lfoGain);
+                lfoGain.connect(filter.frequency);
+                
+                // Final gain
+                const ambientGain = audioContext.createGain();
+                ambientGain.gain.value = 0.02;
+                
+                // Connect everything
+                whiteNoise.connect(filter);
+                filter.connect(ambientGain);
+                ambientGain.connect(audioContext.destination);
+                
+                // Start sounds
+                whiteNoise.start();
+                lfo.start();
+                
+                sounds.ambientSpace = { whiteNoise, lfo, ambientGain };
+            },
+            stopAmbient: () => {
+                if (sounds.ambientSpace) {
+                    sounds.ambientSpace.whiteNoise.stop();
+                    sounds.ambientSpace.lfo.stop();
+                    sounds.ambientSpace = null;
+                }
+            }
+        };
+
+        // Sound toggle
+        document.getElementById('sound-toggle').addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+            if (soundEnabled) {
+                sounds.startAmbient();
+            } else {
+                sounds.stopAmbient();
+            }
+        });
+
+        // Space game canvas
+        const canvas = document.getElementById('space-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+            console.error('Could not get 2D context from canvas');
+        }
+        
+        let gameEntities = [];
+        let playerShip = null;
+        let keys = {};
+        let isNight = false;
+        let timeCounter = 0;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            console.log('Canvas resized:', canvas.width, 'x', canvas.height);
+        }
+
+        // WebAssembly simulated for physics (in real production, you would load a .wasm module)
+        const physics = {
+            checkCollision: (obj1, obj2) => {
+                const dx = obj1.x - obj2.x;
+                const dy = obj1.y - obj2.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                return distance < (obj1.radius + obj2.radius);
+            },
+            applyGravity: (obj, centerX, centerY, mass) => {
+                const dx = centerX - obj.x;
+                const dy = centerY - obj.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const force = (mass * 0.1) / (distance * distance);
+                obj.vx += (dx / distance) * force;
+                obj.vy += (dy / distance) * force;
+            }
+        };
+
+        // Game classes
+        class SpaceEntity {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = 0;
+                this.vy = 0;
+                this.radius = 10;
+                this.alive = true;
+            }
+            
+            update() {}
+            draw() {}
+        }
+
+        class Star extends SpaceEntity {
+            constructor(x, y) {
+                super(x, y);
+                this.radius = Math.random() * 2 + 0.5;
+                this.brightness = Math.random();
+                this.twinkleSpeed = Math.random() * 0.05;
+            }
+            
+            update() {
+                this.brightness += this.twinkleSpeed;
+                if (this.brightness > 1 || this.brightness < 0.3) {
+                    this.twinkleSpeed *= -1;
+                }
+            }
+            
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.brightness})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        class Sun extends SpaceEntity {
+            constructor() {
+                super(canvas.width / 2, canvas.height / 2);
+                this.radius = 60;
+                this.coronaRadius = 80;
+                this.rotation = 0;
+            }
+            
+            update() {
+                this.rotation += 0.001;
+            }
+            
+            draw() {
+                if (isNight) return;
+                
+                // Solar corona
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                
+                const gradient = ctx.createRadialGradient(0, 0, this.radius, 0, 0, this.coronaRadius);
+                gradient.addColorStop(0, 'rgba(255, 200, 50, 1)');
+                gradient.addColorStop(0.5, 'rgba(255, 150, 0, 0.5)');
+                gradient.addColorStop(1, 'rgba(255, 100, 0, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(0, 0, this.coronaRadius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Solar core
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+        }
+
+        class Moon extends SpaceEntity {
+            constructor() {
+                super(canvas.width / 2, canvas.height / 2);
+                this.radius = 50;
+                this.craters = [];
+                for (let i = 0; i < 5; i++) {
+                    this.craters.push({
+                        x: (Math.random() - 0.5) * this.radius,
+                        y: (Math.random() - 0.5) * this.radius,
+                        r: Math.random() * 10 + 5
+                    });
+                }
+            }
+            
+            draw() {
+                if (!isNight) return;
+                
+                // Moon
+                ctx.fillStyle = '#E0E0E0';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Craters
+                ctx.fillStyle = '#C0C0C0';
+                this.craters.forEach(crater => {
+                    ctx.beginPath();
+                    ctx.arc(this.x + crater.x, this.y + crater.y, crater.r, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                
+                // Lunar glow
+                const gradient = ctx.createRadialGradient(this.x - 20, this.y - 20, 0, this.x, this.y, this.radius);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        class Planet extends SpaceEntity {
+            constructor(orbitRadius, orbitSpeed, size, color) {
+                super(0, 0);
+                this.orbitRadius = orbitRadius;
+                this.orbitSpeed = orbitSpeed;
+                this.angle = Math.random() * Math.PI * 2;
+                this.radius = size;
+                this.color = color || '#FF6B6B'; // Default color if not provided
+                this.hasRings = Math.random() > 0.7;
+                this.moons = [];
+                
+                if (Math.random() > 0.5) {
+                    const moonCount = Math.floor(Math.random() * 3) + 1;
+                    for (let i = 0; i < moonCount; i++) {
+                        this.moons.push({
+                            angle: Math.random() * Math.PI * 2,
+                            distance: this.radius + 20 + i * 15,
+                            speed: 0.02 + Math.random() * 0.02,
+                            size: 3 + Math.random() * 3
+                        });
+                    }
+                }
+            }
+            
+            update() {
+                this.angle += this.orbitSpeed;
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                this.x = centerX + Math.cos(this.angle) * this.orbitRadius;
+                this.y = centerY + Math.sin(this.angle) * this.orbitRadius;
+                
+                this.moons.forEach(moon => {
+                    moon.angle += moon.speed;
+                });
+            }
+            
+            draw() {
+                // Planet
+                const gradient = ctx.createRadialGradient(
+                    this.x - this.radius * 0.3, 
+                    this.y - this.radius * 0.3, 
+                    0,
+                    this.x, 
+                    this.y, 
+                    this.radius
+                );
+                gradient.addColorStop(0, this.color);
+                gradient.addColorStop(1, this.darkenColor(this.color));
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Rings
+                if (this.hasRings) {
+                    ctx.strokeStyle = 'rgba(200, 200, 200, 0.5)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.ellipse(this.x, this.y, this.radius * 1.5, this.radius * 0.3, Math.PI / 8, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                // Moons
+                this.moons.forEach(moon => {
+                    const moonX = this.x + Math.cos(moon.angle) * moon.distance;
+                    const moonY = this.y + Math.sin(moon.angle) * moon.distance;
+                    ctx.fillStyle = '#CCCCCC';
+                    ctx.beginPath();
+                    ctx.arc(moonX, moonY, moon.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+            
+            darkenColor(color) {
+                // Convert hex color to RGB if necessary
+                let r, g, b;
+                
+                if (color.startsWith('#')) {
+                    // Hexadecimal color
+                    const hex = color.replace('#', '');
+                    r = parseInt(hex.substr(0, 2), 16);
+                    g = parseInt(hex.substr(2, 2), 16);
+                    b = parseInt(hex.substr(4, 2), 16);
+                } else if (color.startsWith('rgb')) {
+                    // RGB color
+                    const rgb = color.match(/\d+/g);
+                    if (rgb && rgb.length >= 3) {
+                        r = parseInt(rgb[0]);
+                        g = parseInt(rgb[1]);
+                        b = parseInt(rgb[2]);
+                    } else {
+                        // Fallback to dark color
+                        return '#333333';
+                    }
+                } else {
+                    // Fallback to dark color
+                    return '#333333';
+                }
+                
+                // Oscurecer el color
+                r = Math.floor(r * 0.7);
+                g = Math.floor(g * 0.7);
+                b = Math.floor(b * 0.7);
+                
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+        }
+
+        class Asteroid extends SpaceEntity {
+            constructor() {
+                super(Math.random() * canvas.width, Math.random() * canvas.height);
+                this.radius = Math.random() * 20 + 10;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.rotation = 0;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.05;
+                this.vertices = this.generateVertices();
+            }
+            
+            generateVertices() {
+                const vertices = [];
+                const vertexCount = 8 + Math.floor(Math.random() * 4);
+                for (let i = 0; i < vertexCount; i++) {
+                    const angle = (i / vertexCount) * Math.PI * 2;
+                    const variance = 0.8 + Math.random() * 0.4;
+                    vertices.push({
+                        x: Math.cos(angle) * this.radius * variance,
+                        y: Math.sin(angle) * this.radius * variance
+                    });
+                }
+                return vertices;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.rotation += this.rotationSpeed;
+                
+                // Apply sun/moon gravity
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                physics.applyGravity(this, centerX, centerY, isNight ? 50 : 100);
+                
+                // Wrap around
+                if (this.x < -this.radius) this.x = canvas.width + this.radius;
+                if (this.x > canvas.width + this.radius) this.x = -this.radius;
+                if (this.y < -this.radius) this.y = canvas.height + this.radius;
+                if (this.y > canvas.height + this.radius) this.y = -this.radius;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                
+                ctx.fillStyle = '#8B7355';
+                ctx.strokeStyle = '#654321';
+                ctx.lineWidth = 2;
+                
+                ctx.beginPath();
+                ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
+                for (let i = 1; i < this.vertices.length; i++) {
+                    ctx.lineTo(this.vertices[i].x, this.vertices[i].y);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+            
+            explode() {
+                sounds.explosion();
+                for (let i = 0; i < 10; i++) {
+                    gameEntities.push(new Particle(this.x, this.y, '#8B7355'));
+                }
+            }
+        }
+
+        class ExplorerShip extends SpaceEntity {
+            constructor() {
+                super(Math.random() * canvas.width, Math.random() * canvas.height);
+                this.radius = 15;
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = 1 + Math.random();
+                this.color = `hsl(${Math.random() * 60 + 180}, 100%, 60%)`;
+                this.target = null;
+                this.health = 100;
+            }
+            
+            update() {
+                // Find target planet
+                if (!this.target || Math.random() < 0.01) {
+                    const planets = gameEntities.filter(e => e instanceof Planet);
+                    if (planets.length > 0) {
+                        this.target = planets[Math.floor(Math.random() * planets.length)];
+                    }
+                }
+                
+                // Navigate to target
+                if (this.target) {
+                    const dx = this.target.x - this.x;
+                    const dy = this.target.y - this.y;
+                    const angle = Math.atan2(dy, dx);
+                    this.angle = angle;
+                    this.vx = Math.cos(angle) * this.speed;
+                    this.vy = Math.sin(angle) * this.speed;
+                }
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Avoid asteroids
+                const asteroids = gameEntities.filter(e => e instanceof Asteroid);
+                asteroids.forEach(asteroid => {
+                    const dist = Math.hypot(asteroid.x - this.x, asteroid.y - this.y);
+                    if (dist < 100) {
+                        const avoidAngle = Math.atan2(this.y - asteroid.y, this.x - asteroid.x);
+                        this.vx += Math.cos(avoidAngle) * 0.5;
+                        this.vy += Math.sin(avoidAngle) * 0.5;
+                    }
+                });
+                
+                // Wrap around
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle + Math.PI / 2);
+                
+                // Ship
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.moveTo(0, -this.radius);
+                ctx.lineTo(this.radius * 0.7, this.radius);
+                ctx.lineTo(0, this.radius * 0.7);
+                ctx.lineTo(-this.radius * 0.7, this.radius);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Engine
+                if (Math.random() > 0.3) {
+                    ctx.fillStyle = '#FF6600';
+                    ctx.beginPath();
+                    ctx.moveTo(-this.radius * 0.3, this.radius);
+                    ctx.lineTo(0, this.radius + Math.random() * 10 + 5);
+                    ctx.lineTo(this.radius * 0.3, this.radius);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                
+                // Window
+                ctx.fillStyle = 'rgba(100, 200, 255, 0.8)';
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius * 0.3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+            
+            takeDamage(amount) {
+                this.health -= amount;
+                if (this.health <= 0) {
+                    this.explode();
+                    this.alive = false;
+                }
+            }
+            
+            explode() {
+                sounds.explosion();
+                for (let i = 0; i < 20; i++) {
+                    gameEntities.push(new Particle(this.x, this.y, this.color));
+                }
+            }
+        }
+
+        class AlienShip extends SpaceEntity {
+            constructor() {
+                super(Math.random() > 0.5 ? -50 : canvas.width + 50, Math.random() * canvas.height);
+                this.radius = 20;
+                this.speed = 1.5;
+                this.color = '#FF0088';
+                this.fireRate = 100;
+                this.fireCounter = 0;
+                this.target = null;
+            }
+            
+            update() {
+                // Find target
+                const explorers = gameEntities.filter(e => e instanceof ExplorerShip && e.alive);
+                if (explorers.length > 0) {
+                    this.target = explorers.reduce((closest, ship) => {
+                        const dist = Math.hypot(ship.x - this.x, ship.y - this.y);
+                        const closestDist = Math.hypot(closest.x - this.x, closest.y - this.y);
+                        return dist < closestDist ? ship : closest;
+                    });
+                }
+                
+                if (this.target) {
+                    const dx = this.target.x - this.x;
+                    const dy = this.target.y - this.y;
+                    const angle = Math.atan2(dy, dx);
+                    this.vx = Math.cos(angle) * this.speed;
+                    this.vy = Math.sin(angle) * this.speed;
+                    
+                    // Fire
+                    this.fireCounter++;
+                    if (this.fireCounter >= this.fireRate) {
+                        this.fire();
+                        this.fireCounter = 0;
+                    }
+                }
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Remove if off screen
+                if (this.x < -100 || this.x > canvas.width + 100 || 
+                    this.y < -100 || this.y > canvas.height + 100) {
+                    this.alive = false;
+                }
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                
+                // Ship body
+                ctx.fillStyle = '#666';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.radius * 1.2, this.radius * 0.6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Dome
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(0, -this.radius * 0.2, this.radius * 0.8, Math.PI, 0);
+                ctx.fill();
+                
+                // Lights
+                const time = Date.now() * 0.005;
+                ctx.fillStyle = `rgba(255, 0, 136, ${Math.sin(time) * 0.5 + 0.5})`;
+                ctx.beginPath();
+                ctx.arc(-this.radius * 0.5, 0, 3, 0, Math.PI * 2);
+                ctx.arc(this.radius * 0.5, 0, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+            
+            fire() {
+                if (this.target) {
+                    gameEntities.push(new AlienLaser(this.x, this.y, this.target));
+                    sounds.laser();
+                }
+            }
+            
+            explode() {
+                sounds.explosion();
+                for (let i = 0; i < 15; i++) {
+                    gameEntities.push(new Particle(this.x, this.y, this.color));
+                }
+            }
+        }
+
+        class PlayerShip extends SpaceEntity {
+            constructor() {
+                super(canvas.width / 2, canvas.height * 0.8);
+                this.radius = 20;
+                this.angle = -Math.PI / 2;
+                this.speed = 0;
+                this.maxSpeed = 5;
+                this.acceleration = 0.2;
+                this.turnSpeed = 0.05;
+                this.health = 100;
+                this.shield = 100;
+                this.fireRate = 10;
+                this.fireCounter = 0;
+            }
+            
+            update() {
+                // Controls
+                if (keys['ArrowLeft']) this.angle -= this.turnSpeed;
+                if (keys['ArrowRight']) this.angle += this.turnSpeed;
+                
+                if (keys['ArrowUp']) {
+                    this.speed = Math.min(this.speed + this.acceleration, this.maxSpeed);
+                } else {
+                    this.speed *= 0.98;
+                }
+                
+                if (keys['Shift']) { // Turbo
+                    this.speed = Math.min(this.speed + this.acceleration * 2, this.maxSpeed * 1.5);
+                }
+                
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Wrap around
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+                
+                // Regenerate shield
+                if (this.shield < 100) this.shield += 0.1;
+                
+                this.fireCounter++;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle + Math.PI / 2);
+                
+                // Shield
+                if (this.shield > 0) {
+                    ctx.strokeStyle = `rgba(0, 255, 255, ${this.shield / 100 * 0.3})`;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.radius + 10, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                // Ship
+                const gradient = ctx.createLinearGradient(0, -this.radius, 0, this.radius);
+                gradient.addColorStop(0, '#00FF88');
+                gradient.addColorStop(1, '#008844');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(0, -this.radius);
+                ctx.lineTo(this.radius * 0.8, this.radius);
+                ctx.lineTo(0, this.radius * 0.6);
+                ctx.lineTo(-this.radius * 0.8, this.radius);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Thrusters
+                if (keys['ArrowUp'] || keys['Shift']) {
+                    const flameLength = keys['Shift'] ? 30 : 20;
+                    ctx.fillStyle = '#FF6600';
+                    ctx.beginPath();
+                    ctx.moveTo(-this.radius * 0.4, this.radius);
+                    ctx.lineTo(0, this.radius + flameLength + Math.random() * 10);
+                    ctx.lineTo(this.radius * 0.4, this.radius);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                
+                // Cockpit
+                ctx.fillStyle = 'rgba(100, 200, 255, 0.9)';
+                ctx.beginPath();
+                ctx.ellipse(0, -this.radius * 0.3, this.radius * 0.4, this.radius * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+            
+            fire() {
+                if (this.fireCounter >= this.fireRate) {
+                    gameEntities.push(new PlayerLaser(this.x, this.y, this.angle));
+                    sounds.laser();
+                    this.fireCounter = 0;
+                }
+            }
+            
+            takeDamage(amount) {
+                if (this.shield > 0) {
+                    this.shield -= amount;
+                    if (this.shield < 0) {
+                        this.health += this.shield;
+                        this.shield = 0;
+                    }
+                } else {
+                    this.health -= amount;
+                }
+                
+                if (this.health <= 0) {
+                    this.explode();
+                    this.alive = false;
+                    // Respawn after 3 seconds
+                    setTimeout(() => {
+                        playerShip = new PlayerShip();
+                        gameEntities.push(playerShip);
+                    }, 3000);
+                }
+            }
+            
+            explode() {
+                sounds.explosion();
+                for (let i = 0; i < 30; i++) {
+                    gameEntities.push(new Particle(this.x, this.y, '#00FF88'));
+                }
+            }
+        }
+
+        class PlayerLaser extends SpaceEntity {
+            constructor(x, y, angle) {
+                super(x, y);
+                this.speed = 15;
+                this.vx = Math.cos(angle) * this.speed;
+                this.vy = Math.sin(angle) * this.speed;
+                this.lifetime = 60;
+                this.radius = 3;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.lifetime--;
+                
+                if (this.lifetime <= 0) this.alive = false;
+                
+                // Check collisions with asteroids
+                gameEntities.forEach(entity => {
+                    if (entity instanceof Asteroid && physics.checkCollision(this, entity)) {
+                        entity.explode();
+                        entity.alive = false;
+                        this.alive = false;
+                    }
+                    if (entity instanceof AlienShip && physics.checkCollision(this, entity)) {
+                        entity.alive = false;
+                        this.alive = false;
+                        if (entity.explode) {
+                            entity.explode();
+                        }
+                    }
+                });
+            }
+            
+            draw() {
+                ctx.fillStyle = '#00FF88';
+                ctx.shadowColor = '#00FF88';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        class AlienLaser extends SpaceEntity {
+            constructor(x, y, target) {
+                super(x, y);
+                const dx = target.x - x;
+                const dy = target.y - y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                this.speed = 8;
+                this.vx = (dx / dist) * this.speed;
+                this.vy = (dy / dist) * this.speed;
+                this.lifetime = 100;
+                this.radius = 4;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.lifetime--;
+                
+                if (this.lifetime <= 0) this.alive = false;
+                
+                // Collision with player
+                if (playerShip && physics.checkCollision(this, playerShip)) {
+                    playerShip.takeDamage(20);
+                    this.alive = false;
+                }
+                
+                // Collision with explorers
+                gameEntities.forEach(entity => {
+                    if (entity instanceof ExplorerShip && physics.checkCollision(this, entity)) {
+                        entity.takeDamage(30);
+                        this.alive = false;
+                    }
+                });
+            }
+            
+            draw() {
+                ctx.fillStyle = '#FF0088';
+                ctx.shadowColor = '#FF0088';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        class Particle extends SpaceEntity {
+            constructor(x, y, color) {
+                super(x, y);
+                this.vx = (Math.random() - 0.5) * 10;
+                this.vy = (Math.random() - 0.5) * 10;
+                this.radius = Math.random() * 5 + 2;
+                this.color = color;
+                this.lifetime = 30;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+                this.lifetime--;
+                this.radius *= 0.97;
+                
+                if (this.lifetime <= 0 || this.radius < 0.5) this.alive = false;
+            }
+            
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.lifetime / 30;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // Initialize game
+        function initGame() {
+            try {
+                gameEntities = [];
+                
+                // Background stars
+                for (let i = 0; i < 200; i++) {
+                    gameEntities.push(new Star(Math.random() * canvas.width, Math.random() * canvas.height));
+                }
+                
+                // Sun and Moon
+                gameEntities.push(new Sun());
+                gameEntities.push(new Moon());
+                
+                // Planetary system
+                const planetColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#F7DC6F', '#BB8FCE'];
+                for (let i = 0; i < 5; i++) {
+                    gameEntities.push(new Planet(
+                        150 + i * 80,
+                        0.001 + Math.random() * 0.002,
+                        15 + Math.random() * 25,
+                        planetColors[i]
+                    ));
+                }
+                
+                // Asteroids
+                for (let i = 0; i < 10; i++) {
+                    gameEntities.push(new Asteroid());
+                }
+                
+                // Explorer ships
+                for (let i = 0; i < 5; i++) {
+                    gameEntities.push(new ExplorerShip());
+                }
+                
+                // Player ship
+                playerShip = new PlayerShip();
+                gameEntities.push(playerShip);
+                
+                // Spawn aliens periodically
+                setInterval(() => {
+                    if (gameEntities.filter(e => e instanceof AlienShip).length < 3) {
+                        gameEntities.push(new AlienShip());
+                    }
+                }, 10000);
+                
+                console.log('Game initialized with', gameEntities.length, 'entities');
+            } catch (error) {
+                console.error('Error initializing game:', error);
+            }
+        }
+
+        // Player controls
+        window.addEventListener('keydown', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Shift'].includes(e.key)) {
+                e.preventDefault();
+                keys[e.key] = true;
+                
+                // Fire with spacebar
+                if (e.key === ' ' && playerShip && playerShip.alive) {
+                    playerShip.fire();
+                }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Shift'].includes(e.key)) {
+                e.preventDefault();
+                keys[e.key] = false;
+            }
+        });
+
+        // Game loop
+        function gameLoop() {
+            // Check that canvas is ready
+            if (!ctx || !canvas.width || !canvas.height) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            
+            // Clear canvas
+            ctx.fillStyle = isNight ? '#000022' : '#000033';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Day/night cycle
+            timeCounter++;
+            if (timeCounter % 1000 === 0) {
+                isNight = !isNight;
+                document.getElementById('time-cycle').textContent = isNight ? 'Night' : 'Day';
+            }
+            
+            // Update and draw entities
+            gameEntities = gameEntities.filter(entity => entity.alive);
+            gameEntities.forEach(entity => {
+                try {
+                    entity.update();
+                    entity.draw();
+                } catch (error) {
+                    console.error('Entity error:', error);
+                    entity.alive = false;
+                }
+            });
+            
+            // Update HUD
+            document.getElementById('ship-count').textContent = gameEntities.filter(e => e instanceof ExplorerShip).length;
+            document.getElementById('asteroid-count').textContent = gameEntities.filter(e => e instanceof Asteroid).length;
+            document.getElementById('alien-count').textContent = gameEntities.filter(e => e instanceof AlienShip).length;
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            currentSection = sectionId;
+
+            // Entry animation for projects
+            if (sectionId === 'projects') {
+                setTimeout(() => {
+                    document.querySelectorAll('.project-item').forEach((item, index) => {
+                        setTimeout(() => {
+                            item.classList.add('visible');
+                        }, index * 200);
+                    });
+                }, 100);
+            }
+        }
+
+        // Detect admin route
+        function checkRoute() {
+            if (window.location.hash === ADMIN_ROUTE) {
+                showSection('admin');
+            } else if (window.location.hash === '#projects') {
+                showSection('projects');
+            } else {
+                showSection('home');
+            }
+        }
+
+        // Navigation event listeners
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = link.getAttribute('href').substring(1);
+                window.location.hash = target;
+                showSection(target);
+            });
+        });
+
+        document.querySelector('.logo').addEventListener('click', () => {
+            window.location.hash = '';
+            showSection('home');
+        });
+
+        // Admin system
+        const adminLogin = document.getElementById('admin-login');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        const passwordInput = document.getElementById('admin-password');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        function checkAuth() {
+            const isAdmin = sessionStorage.getItem('portfolio_admin') === 'true';
+            if (isAdmin) {
+                adminLogin.style.display = 'none';
+                adminDashboard.classList.add('active');
+            } else {
+                adminLogin.style.display = 'block';
+                adminDashboard.classList.remove('active');
+            }
+            renderProjects();
+            renderAdminProjects();
+        }
+
+        loginBtn.addEventListener('click', () => {
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                sessionStorage.setItem('portfolio_admin', 'true');
+                checkAuth();
+                passwordInput.value = '';
+            } else {
+                alert('Incorrect key');
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('portfolio_admin');
+            window.location.hash = '';
+            showSection('home');
+            checkAuth();
+        });
+
+        // File handling
+        const imageUploadArea = document.getElementById('image-upload-area');
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const imageInput = document.getElementById('project-image');
+        const fileInput = document.getElementById('project-file');
+        const imageNameDisplay = document.getElementById('image-name');
+        const fileNameDisplay = document.getElementById('file-name');
+
+        imageUploadArea.addEventListener('click', () => imageInput.click());
+        fileUploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop for image
+        imageUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.add('dragover');
+        });
+
+        imageUploadArea.addEventListener('dragleave', () => {
+            imageUploadArea.classList.remove('dragover');
+        });
+
+        imageUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.remove('dragover');
+            handleImageFile(e.dataTransfer.files[0]);
+        });
+
+        // Drag and drop for file
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            handleZipFile(e.dataTransfer.files[0]);
+        });
+
+        imageInput.addEventListener('change', (e) => handleImageFile(e.target.files[0]));
+        fileInput.addEventListener('change', (e) => handleZipFile(e.target.files[0]));
+
+        function handleImageFile(file) {
+            if (file && file.type.startsWith('image/')) {
+                selectedImage = file;
+                imageNameDisplay.textContent = `Image: ${file.name}`;
+            } else {
+                alert('Please select a valid image');
+            }
+        }
+
+        function handleZipFile(file) {
+            if (file && (file.type === 'application/zip' || file.type === 'application/x-zip-compressed')) {
+                selectedFile = file;
+                fileNameDisplay.textContent = `File: ${file.name}`;
+            } else {
+                alert('Please select a .zip file');
+            }
+        }
+
+        // Upload project
+        document.getElementById('upload-btn').addEventListener('click', async () => {
+            const title = document.getElementById('project-title').value;
+            const description = document.getElementById('project-description').value;
+
+            if (!title || !description || !selectedFile) {
+                alert('Please complete all fields and select a .zip file');
+                return;
+            }
+
+            try {
+                // Process image
+                let imageData = null;
+                if (selectedImage) {
+                    const reader = new FileReader();
+                    imageData = await new Promise((resolve) => {
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(selectedImage);
+                    });
+                }
+
+                // Process ZIP file
+                const zip = await JSZip.loadAsync(selectedFile);
+                const projectFiles = {};
+                
+                const filePromises = Object.entries(zip.files).map(([name, zipEntry]) => {
+                    if (!zipEntry.dir) {
+                        return zipEntry.async('base64').then(content => {
+                            projectFiles[name] = content;
+                        });
+                    }
+                });
+
+                await Promise.all(filePromises);
+
+                // Create project
+                const project = {
+                    id: `project-${Date.now()}`,
+                    title,
+                    description,
+                    image: imageData,
+                    files: projectFiles,
+                    createdAt: new Date().toISOString()
+                };
+
+                projects.push(project);
+                saveProjects();
+                renderProjects();
+                renderAdminProjects();
+
+                // Clear form
+                document.getElementById('project-title').value = '';
+                document.getElementById('project-description').value = '';
+                selectedFile = null;
+                selectedImage = null;
+                fileNameDisplay.textContent = '';
+                imageNameDisplay.textContent = '';
+                fileInput.value = '';
+                imageInput.value = '';
+
+                alert('Project uploaded successfully');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error processing the project');
+            }
+        });
+
+        // Project management
+        function loadProjects() {
+            projects = JSON.parse(localStorage.getItem('portfolio_projects') || '[]');
+            renderProjects();
+            renderAdminProjects();
+        }
+
+        function saveProjects() {
+            localStorage.setItem('portfolio_projects', JSON.stringify(projects));
+        }
+
+        function renderProjects() {
+            const container = document.getElementById('projects-container');
+            container.innerHTML = '';
+
+            if (projects.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--gray);">No projects available yet.</p>';
+                return;
+            }
+
+            projects.forEach((project, index) => {
+                const projectItem = document.createElement('div');
+                projectItem.className = 'project-item';
+                projectItem.innerHTML = `
+                    <div class="project-image" onclick="openProject('${project.id}')">
+                        ${project.image 
+                            ? `<img src="${project.image}" alt="${project.title}">` 
+                            : '<div class="project-image-placeholder">🚀</div>'
+                        }
+                    </div>
+                    <div class="project-info">
+                        <h3>${project.title}</h3>
+                        <p>${project.description}</p>
+                        <a href="#" class="project-link" onclick="openProject('${project.id}'); return false;">
+                            View Project →
+                        </a>
+                    </div>
+                `;
+                container.appendChild(projectItem);
+            });
+        }
+
+        function renderAdminProjects() {
+            const container = document.getElementById('admin-projects-list');
+            container.innerHTML = '';
+
+            projects.forEach(project => {
+                const item = document.createElement('div');
+                item.className = 'admin-project-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>${project.title}</strong>
+                        <p style="margin: 0; color: var(--gray); font-size: 0.9rem;">${project.description.substring(0, 50)}...</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteProject('${project.id}')">Delete</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function deleteProject(projectId) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                projects = projects.filter(p => p.id !== projectId);
+                saveProjects();
+                renderProjects();
+                renderAdminProjects();
+            }
+        }
+
+        function openProject(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            const mainHtmlFile = Object.keys(project.files).find(name => 
+                name.toLowerCase() === 'index.html' || name.toLowerCase().endsWith('/index.html')
+            );
+
+            if (!mainHtmlFile) {
+                alert('index.html not found in the project');
+                return;
+            }
+
+            let htmlContent = atob(project.files[mainHtmlFile]);
+            const doc = new DOMParser().parseFromString(htmlContent, 'text/html');
+
+            // Inject CSS and JS
+            Object.entries(project.files).forEach(([path, content]) => {
+                if (path.endsWith('.css')) {
+                    const style = doc.createElement('style');
+                    style.textContent = atob(content);
+                    doc.head.appendChild(style);
+                } else if (path.endsWith('.js') && path !== mainHtmlFile) {
+                    const script = doc.createElement('script');
+                    script.textContent = atob(content);
+                    doc.body.appendChild(script);
+                }
+            });
+
+            // Show modal
+            document.getElementById('modal-title').textContent = project.title;
+            document.getElementById('project-iframe').srcdoc = new XMLSerializer().serializeToString(doc);
+            document.getElementById('project-modal').classList.add('active');
+        }
+
+        // Close modal
+        document.getElementById('modal-close').addEventListener('click', () => {
+            document.getElementById('project-modal').classList.remove('active');
+        });
+
+        document.getElementById('project-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'project-modal') {
+                document.getElementById('project-modal').classList.remove('active');
+            }
+        });
+
+        // Scroll animation to hide header
+        let lastScrollTop = 0;
+        const header = document.getElementById('main-header');
+        
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                header.style.transform = 'translateY(0)';
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Global function to delete projects
+        window.deleteProject = deleteProject;
+        window.openProject = openProject;
+
+        // Initialization
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('hashchange', checkRoute);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing...');
+            
+            // Initialize canvas first
+            resizeCanvas();
+            
+            // Wait a moment before initializing the game
+            setTimeout(() => {
+                console.log('Initializing game...');
+                initGame();
+                gameLoop();
+                // Start ambient sound
+                if (soundEnabled) {
+                    sounds.startAmbient();
+                }
+            }, 100);
+            
+            loadProjects();
+            checkAuth();
+            checkRoute();
+
+            // Observe elements for animations
+            document.querySelectorAll('.timeline-item').forEach(item => {
+                observer.observe(item);
+            });
+            
+            console.log('Initialization complete');
+        });
+    </script>
+</body>
+</html>
